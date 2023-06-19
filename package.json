@@ -1,6 +1,6 @@
 {
   "name": "mui-select-tree",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -47,5 +47,11 @@
   },
   "peerDependencies": {
     "react": ">=16"
+  },
+  "dependencies": {
+    "@mui/icons-material": "^5.11.16",
+    "@mui/lab": "^5.0.0-alpha.134",
+    "@mui/material": "^5.13.5",
+    "@mui/styles": "^5.13.2"
   }
 }
