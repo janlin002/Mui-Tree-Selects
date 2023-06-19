@@ -1,6 +1,6 @@
 {
-  "name": "mui-select-tree",
-  "version": "1.0.1",
+  "name": "mui-tree-selects",
+  "version": "1.0.0",
   "description": "",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
