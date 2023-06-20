@@ -2,6 +2,20 @@
 
 使用 Mui Tree 搭配 checkbox 實現樹狀多選單
 
+### install
+
+**npm**
+
+```
+npm install mui-tree-selects
+```
+
+**yarn**
+
+```
+yarn add mui-tree-selects
+```
+
 ### Props
 
 | props         | 功能                                         |
@@ -28,4 +42,30 @@ export type TreeData = {
   parent?: string
   children?: TreeData[]
 }
+```
+
+### 使用
+
+```ts
+import React from 'react'
+
+import { MuiTreeSelect } from 'mui-tree-selects'
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+
+import data from './fakeData.json'
+
+const App = () => {
+  return (
+    <MuiTreeSelect
+      treeData={data}
+      collapseIcon={<ExpandMoreIcon />}
+      expandIcon={<ChevronRightIcon />}
+      iconReverse={true}
+    />
+  )
+}
+
+export default App
 ```
