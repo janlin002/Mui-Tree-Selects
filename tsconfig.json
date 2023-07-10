@@ -5,6 +5,7 @@
       "node_modules"
     ],
     "compilerOptions": {
+      "target": "es6",
       "module": "esnext",
       "lib": ["dom", "esnext"],
       "importHelpers": true,

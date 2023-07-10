@@ -1,4 +1,4 @@
-import React, { MouseEvent } from 'react'
+import React, { MouseEvent, Dispatch, SetStateAction } from 'react'
 import TreeView from '@mui/lab/TreeView'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -7,12 +7,16 @@ import Checkbox from '@mui/material/Checkbox'
 import { makeStyles } from '@mui/styles'
 
 type MuiTreeSelectProps = {
-  treeData: TreeData[]
+  treeData: TreeData[] | any
   collapseIcon?: any
   expandIcon?: any
   iconReverse?: boolean
   checkboxColor?: string
   expanded?: string[]
+  selectedNodes: string[]
+  setSelectedNodes: Dispatch<SetStateAction<string[]>>
+  All: string
+  defaultExpanded?: string[]
 }
 
 type StyleProps = {
@@ -66,6 +70,21 @@ export const useStyles = makeStyles<StyleProps>(() => ({
   },
 }))
 
+const bfsSearch = (graph: TreeData[], targetId: string) => {
+  const queue = [...graph]
+
+  while (queue.length > 0) {
+    const currNode = queue.shift() as TreeData
+    if (currNode.id === targetId) {
+      return currNode
+    }
+    if (currNode.children) {
+      queue.push(...currNode.children)
+    }
+  }
+  return [] // Target node not found
+}
+
 const MuiTreeSelect: React.FC<MuiTreeSelectProps> = ({
   treeData,
   collapseIcon = ChevronRightIcon,
@@ -73,6 +92,10 @@ const MuiTreeSelect: React.FC<MuiTreeSelectProps> = ({
   iconReverse = false,
   checkboxColor = '#121232',
   expanded = [],
+  selectedNodes,
+  setSelectedNodes,
+  All,
+  defaultExpanded,
 }) => {
   const classes = useStyles()
 
@@ -81,9 +104,58 @@ const MuiTreeSelect: React.FC<MuiTreeSelectProps> = ({
       console.log('123123')
     }
 
-    const handleNodeSelect = (event: MouseEvent<HTMLButtonElement>, id: string) => {
-      console.log(event, id, 'iddd')
-      console.log(expanded, '123')
+    function getAllIds(node: any, idList: string[] = []) {
+      idList.push(node.id)
+      // idList = [...idList, node?.id]
+      if (node.children) {
+        node?.children?.forEach((child: any) => getAllIds(child, idList))
+      }
+      return idList
+    }
+
+    const getAllChild = (id: string) => {
+      return getAllIds(bfsSearch(treeData, id))
+    }
+
+    const getAllFathers = (id: string, list: string[] = []): string[] => {
+      const node = bfsSearch(treeData, id) as TreeData
+      if (node.parent) {
+        list.push(node.parent)
+
+        return getAllFathers(node.parent, list)
+      }
+
+      return list
+    }
+
+    function isAllChildrenChecked(node: TreeData, list: string[]) {
+      const allChild = getAllChild(node.id)
+      const nodeIdIndex = allChild.indexOf(node.id)
+      allChild.splice(nodeIdIndex, 1)
+
+      return allChild.every((nodeId) => selectedNodes.concat(list).includes(nodeId))
+    }
+
+    const handleNodeSelect = (event: MouseEvent<HTMLButtonElement>, nodeId: string) => {
+      event.stopPropagation()
+      const allChild = getAllChild(nodeId)
+      const fathers = getAllFathers(nodeId)
+
+      if (selectedNodes.includes(nodeId)) {
+        // Need to de-check
+        setSelectedNodes((prevSelectedNodes) =>
+          prevSelectedNodes.filter((id) => !allChild.concat(fathers).includes(id)),
+        )
+      } else {
+        // Need to check
+        const ToBeChecked = allChild
+        for (let i = 0; i < fathers.length; ++i) {
+          if (isAllChildrenChecked(bfsSearch(treeData, fathers[i]) as TreeData, ToBeChecked)) {
+            ToBeChecked.push(fathers[i])
+          }
+        }
+        setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes].concat(ToBeChecked))
+      }
     }
 
     return (
@@ -118,8 +190,9 @@ const MuiTreeSelect: React.FC<MuiTreeSelectProps> = ({
       defaultExpandIcon={collapseIcon}
       selected={[]} // 可考慮 props
       className={classes.root}
+      defaultExpanded={defaultExpanded ? defaultExpanded : [All]}
     >
-      {treeData?.map((node) => renderTree(node))}
+      {treeData?.map((node: TreeData) => renderTree(node))}
     </TreeView>
   )
 }
