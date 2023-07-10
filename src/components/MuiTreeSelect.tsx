@@ -12,7 +12,7 @@ type MuiTreeSelectProps = {
   expandIcon?: any
   iconReverse?: boolean
   checkboxColor?: string
-  expanded?: string[]
+  // expanded?: string[]
   selectedNodes: string[]
   setSelectedNodes: Dispatch<SetStateAction<string[]>>
   All: string
@@ -91,7 +91,7 @@ const MuiTreeSelect: React.FC<MuiTreeSelectProps> = ({
   expandIcon = ExpandMoreIcon,
   iconReverse = false,
   checkboxColor = '#121232',
-  expanded = [],
+  // expanded = [],
   selectedNodes,
   setSelectedNodes,
   All,
